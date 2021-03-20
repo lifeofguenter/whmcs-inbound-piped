@@ -1,0 +1,10 @@
+.git/
+.github/
+.idea/
+.editorconfig
+.gitignore
+COPYING
+Dockerfile
+Makefile
+README.md
+whmcs-inbound-piped

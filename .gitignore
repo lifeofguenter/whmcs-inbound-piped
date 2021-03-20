@@ -1,0 +1,8 @@
+.DS_Store
+*~
+/.idea/
+/.env
+
+/dist/
+/whmcs-inbound-piped
+/whmcs-inbound-piped.exe
