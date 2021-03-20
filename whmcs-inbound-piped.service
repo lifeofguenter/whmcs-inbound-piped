@@ -1,0 +1,12 @@
+[Unit]
+Description=WHMCS Inbound Piped
+After=network-online.target
+
+[Service]
+EnvironmentFile=-/etc/default/whmcs-inbound-piped
+Type=simple
+ExecStart=whmcs-inbound-piped
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

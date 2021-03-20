@@ -1,0 +1,73 @@
+name: build and publish
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - main
+
+env:
+  TERM: xterm-256color
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build binaries
+        run: make -j4 crossbuild
+
+      - name: create package
+        if: startsWith(github.ref, 'refs/tags/')
+        run: make package
+
+      - name: create release
+        id: create_release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+      - name: upload release darwin/amd64
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/darwin/amd64/whmcs-inbound-piped.zip
+          asset_name: whmcs-inbound-piped_darwin_amd64.zip
+          asset_content_type: application/zip
+
+      - name: upload release linux/amd64
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/linux/amd64/whmcs-inbound-piped.zip
+          asset_name: whmcs-inbound-piped_linux_amd64.zip
+          asset_content_type: application/zip
+
+      - name: upload release windows/amd64
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/windows/amd64/whmcs-inbound-piped.zip
+          asset_name: whmcs-inbound-piped_windows_amd64.zip
+          asset_content_type: application/zip
